@@ -2,10 +2,13 @@ package com.rootcode.backend.repository;
 
 import com.rootcode.backend.entity.Book;
 import com.rootcode.backend.entity.BorrowRecord;
+import com.rootcode.backend.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public interface BorrowedRecordRepository extends JpaRepository<BorrowRecord, Long> {
@@ -16,6 +19,9 @@ public interface BorrowedRecordRepository extends JpaRepository<BorrowRecord, Lo
     Page<BorrowRecord> findByUserId(Long userId, Pageable pageable);
 
     Page<BorrowRecord> findByUserIdAndIsReturned(Long userId, Boolean isReturned, Pageable pageable);
+
+    Optional<BorrowRecord> findByIdAndUser(Long id, User user);
+
 
 
 

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.Map;
 
 @Component
-@WebFilter(urlPatterns = {"/api/user/update", "/api/user/delete", "/api/user/all"})
 public class JWTFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserService userService;

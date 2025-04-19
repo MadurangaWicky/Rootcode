@@ -9,4 +9,11 @@ public class CommonErrorCodes {
     public static final long BOOK_NOT_FOUND_ERROR_CODE = 3000;
     public static final long BOOK_COPIES_STILL_BORROWED = 3001;
 
+    public static final long NO_COPIES_AVAILABLE = 3002;
+    public static final long BOOK_ALREADY_RETURNED_ERROR = 3003;
+
+
+
+    public static final long BORROWED_RECORD_NOT_FOUND_ERROR_CODE = 4000;
+
 }

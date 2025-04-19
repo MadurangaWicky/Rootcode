@@ -52,11 +52,6 @@ public class UserController {
     }
 
 
-    @GetMapping("/test")
-    public String test(){
-        return "test";
-    }
-
 
     @PutMapping("/update")
     public ResponseEntity<AuthSuccessDTO> updateUser(@Valid @RequestBody UserUpdateRequestDTO userUpdateRequestDTO, @AuthenticationPrincipal User user){
@@ -93,6 +88,7 @@ public class UserController {
     }
 
 
+    //Borrowed books by the authentcated user
     @PostMapping("/borrowed-books")
     public ResponseEntity<StandardResponse> getUserBorrowedBooks(
             @AuthenticationPrincipal User user,
@@ -111,11 +107,5 @@ public class UserController {
         StandardResponse response = new StandardResponse(true, result);
         return ResponseEntity.ok(response);
     }
-
-
-
-
-
-
 
 }
