@@ -1,0 +1,14 @@
+Didn't use user verification when in the register path. After a successful registration set the tokens to the browser cookies as logged in that time.  
+
+Used one exception type as CustomException by including a custom Error code and a message.
+
+Used Spring's caching mechanism (in-memory), because don't need a distributed one here hence this is a single instance of a monolith application. 
+
+Didn't use the Lombok. because my IDE has a issue with Lombok (an Annotation processing issue)
+
+Some API couldn't be tested due to time constraints
+
+Added almost all the crud and other operations
+
+Had to create seperate entity. because need to have borrow records for users and books.
+
