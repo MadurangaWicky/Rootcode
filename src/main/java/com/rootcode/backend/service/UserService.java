@@ -167,7 +167,7 @@ public class UserService {
         }
     }
 
-    public void deleteUser(String username) {
+    public void deleteUser(String username, HttpServletResponse response) {
         try {
             logger.info("Delete user for the user: {}", username);
             Optional<User> existingUserOptional = userRepository.findByUsername(username);
@@ -177,11 +177,27 @@ public class UserService {
             User existingUser = existingUserOptional.get();
             userRepository.delete(existingUser);
             deleteUserCache(username);
+
+            Cookie accessTokenCookie = new Cookie("accessToken", null);
+            accessTokenCookie.setMaxAge(0);
+            accessTokenCookie.setPath("/");
+            accessTokenCookie.setHttpOnly(true);
+            accessTokenCookie.setSecure(true);
+
+            Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+            refreshTokenCookie.setMaxAge(0);
+            refreshTokenCookie.setPath("/");
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(true);
+
+            response.addCookie(accessTokenCookie);
+            response.addCookie(refreshTokenCookie);
         }
         catch (CustomException e) {
             throw e;
         }
         catch (Exception e) {
+            logger.error("Error deleting user: {}", username, e);
             throw new CustomException(CommonErrorCodes.INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     }

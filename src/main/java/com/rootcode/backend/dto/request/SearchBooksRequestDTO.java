@@ -3,10 +3,17 @@ package com.rootcode.backend.dto.request;
 import jakarta.validation.constraints.Min;
 
 public class SearchBooksRequestDTO {
+    private String title;
     private String author;
 
     @Min(0)
     private Integer publishedYear;
+
+    @Min(0)
+    private Integer startYear;
+
+    @Min(0)
+    private Integer endYear;
 
     @Min(0)
     private int page = 0;
@@ -16,6 +23,14 @@ public class SearchBooksRequestDTO {
 
     private String sortBy = "title";
     private String direction = "asc";
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public String getAuthor() {
         return author;
@@ -31,6 +46,22 @@ public class SearchBooksRequestDTO {
 
     public void setPublishedYear(Integer publishedYear) {
         this.publishedYear = publishedYear;
+    }
+
+    public Integer getStartYear() {
+        return startYear;
+    }
+
+    public void setStartYear(Integer startYear) {
+        this.startYear = startYear;
+    }
+
+    public Integer getEndYear() {
+        return endYear;
+    }
+
+    public void setEndYear(Integer endYear) {
+        this.endYear = endYear;
     }
 
     public int getPage() {

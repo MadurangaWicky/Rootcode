@@ -11,6 +11,7 @@ import com.rootcode.backend.entity.Book;
 import com.rootcode.backend.service.BookService;
 import com.rootcode.backend.service.BorrowedService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/book")
 public class BookController {
+    private Logger logger = org.slf4j.LoggerFactory.getLogger(BookController.class);
     private final BookService bookService;
     private final BorrowedService borrowedService;
 
@@ -34,6 +36,7 @@ public class BookController {
 
     @PutMapping("/updateBook")
     public ResponseEntity<StandardResponse> updateBook(@Valid @RequestBody UpdateBookRequestDTO updateBookRequestDTO) {
+        logger.info(updateBookRequestDTO.getId().toString());
         StandardResponse response = new StandardResponse(true, bookService.updateBook(updateBookRequestDTO));
         return ResponseEntity.ok().body(response);
     }
@@ -47,14 +50,14 @@ public class BookController {
 
 
     @PostMapping("/books/list")
-    public ResponseEntity<StandardResponse> getAllBooks(@RequestBody @Valid GetAllBooksRequestDTO requestDTO) {
+    public ResponseEntity<StandardResponse> getAllBooks(@Valid @RequestBody  GetAllBooksRequestDTO requestDTO) {
         Page<Book> books = bookService.getAllBooks(requestDTO);
         StandardResponse response = new StandardResponse(true, books);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/books/search")
-    public ResponseEntity<StandardResponse> searchBooks(@Valid SearchBooksRequestDTO requestDTO) {
+    @PostMapping("/books/search")
+    public ResponseEntity<StandardResponse> searchBooks(@Valid @RequestBody SearchBooksRequestDTO requestDTO) {
         Page<BookResponseDTO> result = borrowedService.searchBooks(requestDTO);
         StandardResponse response = new StandardResponse(true, result);
         return ResponseEntity.ok(response);

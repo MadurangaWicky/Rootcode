@@ -61,8 +61,8 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<AuthSuccessDTO> deleteUser(@AuthenticationPrincipal User user){
-        userService.deleteUser(user.getUsername());
+    public ResponseEntity<AuthSuccessDTO> deleteUser(@AuthenticationPrincipal User user, HttpServletResponse response){
+        userService.deleteUser(user.getUsername(), response);
         AuthSuccessDTO success = new AuthSuccessDTO(true, "User deleted successfully");
         return ResponseEntity.ok().body(success);
     }

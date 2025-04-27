@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class UpdateBookRequestDTO {
 
-    @NotBlank(message = "Book ID is required")
+    @NotNull(message = "Book ID is required")
     private Long id;
 
     private String title;

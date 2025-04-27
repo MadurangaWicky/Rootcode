@@ -1,5 +1,6 @@
 package com.rootcode.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 
 import jakarta.persistence.*;
@@ -72,5 +73,6 @@ public class Book {
     private int availableCopies;
 
     @OneToMany(mappedBy = "book")
+    @JsonIgnore
     private Set<BorrowRecord> borrowRecords = new HashSet<>();
 }

@@ -1,5 +1,6 @@
 package com.rootcode.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -40,6 +41,7 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private Set<BorrowRecord> borrowRecords = new HashSet<>();
 
     public void setId(Long id) {
