@@ -37,6 +37,7 @@ public class BorrowedService {
     public Page<BorrowedBookResponseDTO> getBorrowedBooksByUser(User user, GetBorrowedBooksRequestDTO dto) {
         try {
             logger.info("Getting borrowed books by current user");
+            logger.info("User: {}", user.getUsername());
             Sort.Direction sortDirection = dto.getDirection().equalsIgnoreCase("desc")
                     ? Sort.Direction.DESC
                     : Sort.Direction.ASC;
@@ -50,7 +51,7 @@ public class BorrowedService {
             Page<BorrowRecord> records;
 
             if (dto.getIsReturned() != null) {
-                records = borrowedRecordRepository.findAllByUserIdAndReturned(user.getId(), dto.getIsReturned(), pageable);
+                records = borrowedRecordRepository.findAllByUserIdAndIsReturned(user.getId(), dto.getIsReturned(), pageable);
             } else {
                 records = borrowedRecordRepository.findAllByUserId(user.getId(), pageable);
             }
@@ -79,7 +80,7 @@ public class BorrowedService {
         try {
             logger.info("Getting borrowed books by user id {}", userId);
 
-            Sort.Direction direction = requestDTO.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+            Sort.Direction direction = requestDTO.getDirection().equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
             Pageable pageable = PageRequest.of(requestDTO.getPage(), requestDTO.getSize(), Sort.by(direction, requestDTO.getSortBy()));
 
             Page<BorrowRecord> records;
@@ -110,22 +111,62 @@ public class BorrowedService {
 
 
     public Page<BookResponseDTO> searchBooks(SearchBooksRequestDTO dto) {
-        try{
-        Sort.Direction direction = dto.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(dto.getPage(), dto.getSize(), Sort.by(direction, dto.getSortBy()));
+        try {
+            if (dto.getPublishedYear() == null) {
+                dto.setPublishedYear(0);
+            }
+            if (dto.getAuthor() == null) {
+                dto.setAuthor("");
+            }
+            if (dto.getTitle() == null) {
+                dto.setTitle("");
+            }
+            if (dto.getDirection() == null) {
+                dto.setDirection("asc");
+            }
+            if (dto.getSortBy() == null) {
+                dto.setSortBy("title");
+            }
+            if (dto.getPage() < 0) {
+                dto.setPage(0);
+            }
+            if (dto.getSize() < 1) {
+                dto.setSize(10);
+            }
 
-        Page<Book> books = bookRepository.searchAvailableBooks(dto.getAuthor(), dto.getPublishedYear(), pageable);
+            Sort.Direction direction = dto.getDirection().equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+            Pageable pageable = PageRequest.of(dto.getPage(), dto.getSize(), Sort.by(direction, dto.getSortBy()));
 
-        return books.map(book -> new BookResponseDTO(
-                book.getId(),
-                book.getTitle(),
-                book.getAuthor(),
-                book.getPublishedYear(),
-                book.getAvailableCopies()
-        ));
-    }
-    catch (Exception e) {
-        throw new CustomException(CommonErrorCodes.INTERNAL_SERVER_ERROR, "Internal Server Error");
+            Page<Book> books;
+
+            if (!dto.getAuthor().isEmpty() && !dto.getTitle().isEmpty() && dto.getPublishedYear() > 0) {
+                books = bookRepository.searchByAuthorTitleAndYear(dto.getAuthor(), dto.getTitle(), dto.getPublishedYear(), pageable);
+            } else if (!dto.getAuthor().isEmpty() && !dto.getTitle().isEmpty()) {
+                books = bookRepository.searchByAuthorAndTitle(dto.getAuthor(), dto.getTitle(), pageable);
+            } else if (!dto.getAuthor().isEmpty() && dto.getPublishedYear() > 0) {
+                books = bookRepository.searchByAuthorAndYear(dto.getAuthor(), dto.getPublishedYear(), pageable);
+            } else if (!dto.getTitle().isEmpty() && dto.getPublishedYear() > 0) {
+                books = bookRepository.searchByTitleAndYear(dto.getTitle(), dto.getPublishedYear(), pageable);
+            } else if (!dto.getAuthor().isEmpty()) {
+                books = bookRepository.searchByAuthor(dto.getAuthor(), pageable);
+            } else if (!dto.getTitle().isEmpty()) {
+                books = bookRepository.searchByTitle(dto.getTitle(), pageable);
+            } else if (dto.getPublishedYear() > 0) {
+                books = bookRepository.searchByYear(dto.getPublishedYear(), pageable);
+            } else {
+                books = bookRepository.findAllAvailableBooks(pageable);
+            }
+
+            return books.map(book -> new BookResponseDTO(
+                    book.getId(),
+                    book.getTitle(),
+                    book.getAuthor(),
+                    book.getPublishedYear(),
+                    book.getAvailableCopies()
+            ));
+        } catch (Exception e) {
+            logger.error("Error searching books", e);
+            throw new CustomException(CommonErrorCodes.INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     }
 
